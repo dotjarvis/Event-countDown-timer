@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Event countDown timer</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Stick+No+Bills:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+    <script defer src="script.js"></script>
+  </head>
+  <body>
+    <div class="whole-body">
+      <div class="date-modification">
+        <br />
+        <p class="message">Hold up, we're almost there</p>
+        <br /><br /><br /><br />
+        <b class="time-remaining">
+          <button class="remining-time months">00</button>m
+          <button class="remining-time weeks">00</button>w
+          <button class="remining-time days">00</button>d
+          <button class="remining-time hours">00</button>h
+          <button class="remining-time mins">00</button>m
+          <button class="remining-time seconds">00</button>s
+        </b>
+        <button class="change-date-format">^</button>
+
+        <br /><br /><br /><br />
+        <b><p class="event-day">Christmas day</p></b>
+
+        <p class="final-day">25 Dec 2022</p>
+
+        <br /><br /><br />
+        <button class="change-date-data">change</button>
+      </div>
+
+      <div class="change-date hidden">
+        <h3>Which event is coming up :</h3>
+        <input
+          type="text"
+          class="dispaly-message"
+          placeholder="Celebrating anniversary"
+        />
+
+        <br /><br />
+        <h3>Insert the event date :</h3>
+        <input type="date" class="date-input" name="date-input" />
+        <br /><br />
+
+        <h3>Insert your personal motivaton :</h3>
+        <input
+          type="text"
+          class="motivation-message"
+          placeholder="Almost there, hang on tight."
+        />
+        <br /><br />
+        <input type="submit" class="submit" />
+      </div>
+    </div>
+  </body>
+</html>
