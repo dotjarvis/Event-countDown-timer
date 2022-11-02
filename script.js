@@ -1,67 +1,87 @@
-const submit = document.querySelector(`.submit`);
-const dateInput = document.querySelector(`.date-input`);
-const motivationMessage = document.querySelector(`.motivation-message`);
-const displaMessage = document.querySelector(`.dispaly-message`);
-const changeDate = document.querySelector(`.change-date`);
-const dateModification = document.querySelector(`.date-modification`);
-const changeBtn = document.querySelector(`.change-date-data`);
-const finalDay = document.querySelector(`.final-day`);
-const specialDayName = document.querySelector(`.event-day`);
-const motivationDisplayed = document.querySelector(`.message`);
-const timeRemainingFormat = document.querySelector(`.change-date-format`);
-const remainingTimeContainer = document.querySelector(`.time-remaining`);
+const changeDateForm = document.querySelector(`.user-changedate-form`);
+const dateDisplay = document.querySelector(`.output-display-date`);
 
-const months = document.querySelector(`.months`);
-const weeks = document.querySelector(`.weeks`);
-const days = document.querySelector(`.days`);
-const hours = document.querySelector(`.hours`);
-const mins = document.querySelector(`.mins`);
-const seconds = document.querySelector(`.seconds`);
+const eventDate = document.querySelector(`.event-date`);
+const eventDay = document.querySelector(`.event-day`);
+const eventMessage = document.querySelector(`.event-message`);
 
-let inputdate, motivation, diplayedmessge;
+const changeBtn = document.querySelector(`.change-btn`);
+const submitBtn = document.querySelector(`.submit`);
+const timeFormatBtn = document.querySelector(`.time-format-btn`);
+
+const dateTimeContainer = document.querySelector(`.date-time-container`);
+const months = document.querySelector(`.remaining-months`);
+const weeks = document.querySelector(`.remaining-weeks`);
+const days = document.querySelector(`.remaining-days`);
+const hours = document.querySelector(`.remaining-hours`);
+const mins = document.querySelector(`.remaining-mins`);
+const seconds = document.querySelector(`.remaining-seconds`);
+
+const dateFromUser = document.querySelector(`.date-from-user`);
+const motivationFromUser = document.querySelector(`.motivation-from-user`);
+const userEventDayName = document.querySelector(`.eventday-name-from-user`);
+
+let state = 0;
+let active = false;
+let deadlineDate = new Date(`2022-12-25`);
+let secondsInterval;
 
 changeBtn.addEventListener(`click`, function (e) {
   e.preventDefault();
-  changeDate.classList.remove(`hidden`);
-  dateModification.classList.add(`hidden`);
+  changeDateForm.classList.remove(`hidden`);
+  dateDisplay.classList.add(`hidden`);
 });
 
-submit.addEventListener(`click`, function (e) {
+// The submit button
+submitBtn.addEventListener(`click`, function (e) {
   e.preventDefault();
+  let userDate, userMotivation, eventDayName;
+  const userEventMessage = eventMessage.textContent;
+  const userEventDay = eventDay.textContent;
 
-  inputdate = dateInput.value;
-  motivation = motivationMessage.value;
-  diplayedmessge = displaMessage.value;
+  userDate = dateFromUser.value;
+  userMotivation = motivationFromUser.value;
+  eventDayName = userEventDayName.value;
 
-  if (!inputdate) {
+  // If date is empty alert
+  if (!userDate) {
     alert(`Use correct Date format`);
   }
-  if (!(new Date(inputdate) >= new Date())) {
+
+  // If date is less then current alert date passed
+  if (!(new Date(userDate) >= new Date())) {
     alert(`The day has already passed, please select another date`);
   }
 
-  deadlineDate = new Date(inputdate);
-  finalDay.textContent = new Intl.DateTimeFormat(localStorage.locale, {
+  // Update global deadline Date and event date to user interface
+  deadlineDate = new Date(userDate);
+  eventDate.textContent = new Intl.DateTimeFormat(localStorage.locale, {
     day: `numeric`,
     month: `short`,
     year: `numeric`,
   }).format(deadlineDate);
 
-  motivationDisplayed.textContent = motivation;
-  specialDayName.textContent = diplayedmessge;
+  // If inputs are empty then retain original messages otherwise update
+  eventMessage.textContent =
+    dateFromUser.value === `` ? userEventMessage : userMotivation;
+  eventDay.textContent =
+    userEventDayName.value === `` ? userEventDay : eventDayName;
 
-  dateInput.value = ``;
-  motivationMessage.value = ``;
-  displaMessage.value = ``;
+  // Reset inputs back to empty
+  dateFromUser.value = ``;
+  motivationFromUser.value = ``;
+  userEventDayName.value = ``;
 
-  changeDate.classList.add(`hidden`);
-  dateModification.classList.remove(`hidden`);
+  changeDateForm.classList.add(`hidden`);
+  dateDisplay.classList.remove(`hidden`);
 });
 
-let state = 0;
-let activeTimeInterval = false;
-timeRemainingFormat.addEventListener(`click`, function (e) {
+timeFormatBtn.addEventListener(`click`, function (e) {
   e.preventDefault();
+
+  if (active) clearInterval(secondsInterval);
+  state += 1;
+  if (state === 3) state = 0;
 
   let html,
     remainMonths,
@@ -71,12 +91,12 @@ timeRemainingFormat.addEventListener(`click`, function (e) {
     remainMins,
     remainSec;
 
-  const secondsInterval = setInterval(() => {
+  const interval = function () {
     const time = deadlineDate - new Date();
 
     // MONTHS WEEKS DAYS HOURS MINS SECS
     if (state === 0) {
-      remainingTimeContainer.innerHTML = ``;
+      dateTimeContainer.innerHTML = ``;
       remainMonths = time / (1000 * 60 * 60 * 24 * 30);
       remainWeeks = ((remainMonths - Math.trunc(remainMonths)) * 30) / 7;
       remainDays = (remainWeeks - Math.trunc(remainWeeks)) * 7;
@@ -86,20 +106,20 @@ timeRemainingFormat.addEventListener(`click`, function (e) {
 
       // prettier-ignore
       html = `
-    <button class="remining-time months">${String(Math.trunc(remainMonths)).padStart(2, `0`)}</button>m
-    <button class="remining-time weeks">${String(Math.trunc(remainWeeks)).padStart(2, `0`)}</button>w
-    <button class="remining-time days">${String(Math.trunc(remainDays)).padStart(2, `0`)}</button>d
-    <button class="remining-time hours">${String(Math.trunc(remainHours)).padStart(2, `0`)}</button>h
-    <button class="remining-time mins">${String(Math.trunc(remainMins)).padStart(2, `0`)}</button>m
-    <button class="remining-time seconds">${String(Math.trunc(remainSec)).padStart(2, `0`)}</button>s
+    <button class="time-date remaining-months">${String(Math.trunc(remainMonths)).padStart(2, `0`)}</button>m
+    <button class="time-date remaining-weeks">${String(Math.trunc(remainWeeks)).padStart(2, `0`)}</button>w
+    <button class="time-date remaining-days">${String(Math.trunc(remainDays)).padStart(2, `0`)}</button>d
+    <button class="time-date remaining-hours">${String(Math.trunc(remainHours)).padStart(2, `0`)}</button>h
+    <button class="time-date remaining-mins">${String(Math.trunc(remainMins)).padStart(2, `0`)}</button>m
+    <button class="time-date remaining-seconds">${String(Math.trunc(remainSec)).padStart(2, `0`)}</button>s
         `;
-      remainingTimeContainer.insertAdjacentHTML(`afterbegin`, html);
-      activeTimeInterval = true;
+      dateTimeContainer.insertAdjacentHTML(`afterbegin`, html);
+      return (active = true);
     }
 
     // WEEKS DAYS HOURS MINS SECS
     if (state === 1) {
-      remainingTimeContainer.innerHTML = ``;
+      dateTimeContainer.innerHTML = ``;
       remainWeeks = time / (1000 * 60 * 60 * 24 * 7);
       remainDays = (remainWeeks - Math.trunc(remainWeeks)) * 7;
       remainHours = (remainDays - Math.trunc(remainDays)) * 24;
@@ -108,18 +128,19 @@ timeRemainingFormat.addEventListener(`click`, function (e) {
 
       // prettier-ignore
       html = `
-    <button class="remining-time weeks">${String(Math.trunc(remainWeeks)).padStart(2, `0`)}</button>w
-    <button class="remining-time days">${String(Math.trunc(remainDays)).padStart(2, `0`)}</button>d
-    <button class="remining-time hours">${String(Math.trunc(remainHours)).padStart(2, `0`)}</button>h
-    <button class="remining-time mins">${String(Math.trunc(remainMins)).padStart(2, `0`)}</button>m
-    <button class="remining-time seconds">${String(Math.trunc(remainSec)).padStart(2, `0`)}</button>s
+    <button class="time-date remaining-weeks">${String(Math.trunc(remainWeeks)).padStart(2, `0`)}</button>w
+    <button class="time-date remaining-days">${String(Math.trunc(remainDays)).padStart(2, `0`)}</button>d
+    <button class="time-date remaining-hours">${String(Math.trunc(remainHours)).padStart(2, `0`)}</button>h
+    <button class="time-date remaining-mins">${String(Math.trunc(remainMins)).padStart(2, `0`)}</button>m
+    <button class="time-date remaining-seconds">${String(Math.trunc(remainSec)).padStart(2, `0`)}</button>s
         `;
-      remainingTimeContainer.insertAdjacentHTML(`afterbegin`, html);
-      activeTimeInterval = true;
+      dateTimeContainer.insertAdjacentHTML(`afterbegin`, html);
+      return (active = true);
     }
+
     // DAYS HOURS MINS SECS
     if (state === 2) {
-      remainingTimeContainer.innerHTML = ``;
+      dateTimeContainer.innerHTML = ``;
       remainDays = time / (1000 * 60 * 60 * 24);
       remainHours = (remainDays - Math.trunc(remainDays)) * 24;
       remainMins = (remainHours - Math.trunc(remainHours)) * 60;
@@ -127,20 +148,26 @@ timeRemainingFormat.addEventListener(`click`, function (e) {
 
       // prettier-ignore
       html = `
-          <button class="remining-time days">${String(Math.trunc(remainDays)).padStart(2, `0`)}</button>d
-          <button class="remining-time hours">${String(Math.trunc(remainHours)).padStart(2, `0`)}</button>h
-          <button class="remining-time mins">${String(Math.trunc(remainMins)).padStart(2, `0`)}</button>m
-          <button class="remining-time seconds">${String(Math.trunc(remainSec)).padStart(2, `0`)}</button>s
+          <button class="time-date remaining-days">${String(Math.trunc(remainDays)).padStart(2, `0`)}</button>d
+          <button class="time-date remaining-hours">${String(Math.trunc(remainHours)).padStart(2, `0`)}</button>h
+          <button class="time-date remaining-mins">${String(Math.trunc(remainMins)).padStart(2, `0`)}</button>m
+          <button class="time-date remaining-seconds">${String(Math.trunc(remainSec)).padStart(2, `0`)}</button>s
               `;
-      remainingTimeContainer.insertAdjacentHTML(`afterbegin`, html);
-      activeTimeInterval = true;
+      dateTimeContainer.insertAdjacentHTML(`afterbegin`, html);
+      return (active = true);
     }
+  };
+
+  // calling the functin to prevent delays
+  interval();
+
+  // calling functino in intervals
+  secondsInterval = setInterval(() => {
+    interval();
   }, 1000);
-  state += 1;
-  if (state === 3) state = 0;
-  if (activeTimeInterval) clearInterval(secondsInterval);
 });
 
+// Calculating and displaying the Time remaining
 const timeEvaluation = function (date1, date2) {
   const time = date2 - date1;
   const remainMonths = time / (1000 * 60 * 60 * 24 * 30);
@@ -157,8 +184,6 @@ const timeEvaluation = function (date1, date2) {
   mins.textContent = `${Math.trunc(remainMins)}`.padStart(2, 0);
   seconds.textContent = `${Math.trunc(remainSec)}`.padStart(2, 0);
 };
-
-let deadlineDate = new Date(`2022-12-25`);
 
 const timeElapse = setInterval(() => {
   timeEvaluation(new Date(), deadlineDate);
